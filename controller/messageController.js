@@ -183,8 +183,17 @@ const getAllUserMessage = async (req, res) => {
 
 const getByIDMessage = async (req, res) => {
   try {
-    const { id, Msg } = req.body;
-    const data = await messageModel.find({ msg: Msg, from: id });
+    const { id, msg } = req.body; // Changed variable name from Msg to msg to match user input
+    const data = await messageModel.find({
+      $or: [
+        {
+          $and: [{ to: id }, { text: { $regex: msg, $options: 'i' } }]
+        },
+        {
+          $and: [{ from: id }, { text: { $regex: msg, $options: 'i' } }]
+        }
+      ]
+    });
 
     const projectMsg = data.map((msg) => ({
       fromSelf: msg.from.toString() === id,
@@ -201,7 +210,7 @@ const getByIDMessage = async (req, res) => {
       message: projectMsg,
     });
   } catch (error) {
-    console.error("error", error); // Log the error for debugging
+    console.error("Error:", error); // Log the error for debugging
     return res.status(500).json({
       status: 0,
       message: "Internal server error",
@@ -215,11 +224,7 @@ const DeleteUserMessage = async (req, res) => {
 
     // Find messages based on the criteria
     const data = await messageModel.find({ msg: Msg, from: id });
-
-    // Extract message IDs to delete
     const messageIdsToDelete = data.map((msg) => msg._id);
-
-    // Delete the messages
     await messageModel.deleteMany({ _id: { $in: messageIdsToDelete } });
 
     return res.json({
@@ -227,7 +232,7 @@ const DeleteUserMessage = async (req, res) => {
       message: "Messages deleted successfully",
     });
   } catch (error) {
-    console.error("error", error); // Log the error for debugging
+    console.error("error", error);
     return res.status(500).json({
       status: 0,
       message: "Internal server error",
