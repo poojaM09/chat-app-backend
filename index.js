@@ -49,24 +49,27 @@ io.on("connection", (socket) => {
 
   socket.on('login', async (data) => {
     console.log("socket ID", socket.id, data)
-    // `doc` is the document _before_ `update` was applied
-    await userModel.findOneAndUpdate({ _id: data?.toString() }, { socketid: socket.id });
+    if (data) { // Check if data is defined
+      await userModel.findOneAndUpdate({ _id: data.toString() }, { socketid: socket.id });
+    }
   });
 
   socket.on("add-user", async (newuserID) => {
-    await userModel.findOneAndUpdate({ _id: newuserID.toString() }, { socketid: socket.id });
-    if (!onlineUser.some((user) => user.userID == newuserID)) {
-      onlineUser.push({
-        userID: newuserID,
-        socketId: socket.id,
-      });
-    } else {
-      let index = onlineUser.findIndex(item => item.userID == newuserID)
-      onlineUser[index].socketId = socket.id;
-      console.log("already added");
+    if (newuserID) { // Check if newuserID is defined
+      await userModel.findOneAndUpdate({ _id: newuserID.toString() }, { socketid: socket.id });
+      if (!onlineUser.some((user) => user.userID == newuserID)) {
+        onlineUser.push({
+          userID: newuserID,
+          socketId: socket.id,
+        });
+      } else {
+        let index = onlineUser.findIndex(item => item.userID == newuserID)
+        onlineUser[index].socketId = socket.id;
+        console.log("already added");
+      }
+      console.log("add-user", onlineUser, newuserID);
+      io.emit("online-user", onlineUser);
     }
-    console.log("add-user", onlineUser, newuserID);
-    io.emit("online-user", onlineUser);
   });
 
   //send message
