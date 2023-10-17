@@ -156,7 +156,7 @@ const CreateClient = async (req, res) => {
     });
   } else {
     const user = new userModel({ name, email, contactNumber, socketid: '' });
-    const token = jwt.sign({id,email,name, email, contactNumber }, process.env.JWT_KEY, { expiresIn: "7d" })
+    const token = jwt.sign({email,name, email, contactNumber }, process.env.JWT_KEY, { expiresIn: "7d" })
     user.token = token;
 
     await user.save();
