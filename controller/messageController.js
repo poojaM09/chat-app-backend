@@ -1,5 +1,5 @@
 const messageModel = require("../Models/messageModel");
-
+const path = require('path')
 const sendMessage = async (req, res) => {
   const { from, to, message, msg_type } = req.body;
   if (!from || !to) {
@@ -181,6 +181,12 @@ const getAllUserMessage = async (req, res) => {
   }
 };
 
+const getFile = async(req, res) => {
+  const filename = req.params.filename;
+  res.sendFile(path.join(__dirname, '../public', filename));
+  console.log(path.join(__dirname, '../public', filename,'path'))
+};
+
 const getByIDMessage = async (req, res) => {
   try {
     const { id, msg } = req.body; // Changed variable name from Msg to msg to match user input
@@ -280,5 +286,6 @@ module.exports = {
   getAllUserMessage,
   getByIDMessage,
   DeleteUserMessage,
-  UpdateUserMessage
+  UpdateUserMessage,
+  getFile
 };

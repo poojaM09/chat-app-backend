@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { sendMessage, sendImage, getAllMessage, viewMessage, changeStatus,getAllUserMessage ,getByIDMessage,DeleteUserMessage,UpdateUserMessage} = require("../controller/messageController");
+const { sendMessage, sendImage, getAllMessage, viewMessage, changeStatus,getAllUserMessage ,getByIDMessage,DeleteUserMessage,UpdateUserMessage,getFile} = require("../controller/messageController");
 const { chatApi, imagGenrator } = require("../controller/chatGptController");
 const { isAuthenticated } = require("../middleware/validateToken");
 const { imageUpload } = require("../middleware/multer");
@@ -15,6 +15,7 @@ router.delete("/UpdateUserMessage", UpdateUserMessage);
 router.post("/userMessage",getAllUserMessage);
 router.post("/chatapi", chatApi);
 router.post("/imagGenrator", imagGenrator);
+router.get("/getFile/:filename", getFile);
 
 // router.post("/chatapi", async (req, res) => {
 //   const msg = req.body.message;
