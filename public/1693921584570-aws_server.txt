@@ -1,0 +1,36 @@
+1. Login to AWS
+2. Go to services-> ec2
+3. Go to instance
+4. Click on “Launch Instance”
+	a. Choose an Amazon Machine Image
+	Select “Amazon Linux AMI” or “Amazon Linux 2” for free instance
+	b. Choose an Instance Type
+	Select INstance Type with Free tier eligible
+	c. Click “Review and Launch”
+	d. Click “Launch”
+5. Key Pair
+	a. Select “Create a New key pair”
+	b. Enter key pair name
+	c. Download key pair
+6. Click “Launch Instance”
+7. Click “view Instance”
+8. Copy Public DNS: “ec2-18-216-19-113.us-east-2.compute.amazonaws.com”
+9. Go to security groups
+	a. Select “ launch-wizard-x”
+	b. Click “Inbound”
+	c. Click Edit
+	d. Add rules
+	e. Select HTTP TCP 80
+	f. Save
+10. Open putty KeyGen (key genrator)
+	a. Load pem key file
+	b. Click save private key after successful key load (save as PPK)
+11. Open Putty
+	a. Host name = public DNS
+	b. Add PPK key file in Connection->SSH->Auth
+	c. Open
+	d. Login as: ec2-user
+12. Now follow
+	a. https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-lamp-amazon-linux-2.html
+	b. OR https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/install-LAMP.html
+	Based on your instance type to install Apache, Mysql, and PHP 
