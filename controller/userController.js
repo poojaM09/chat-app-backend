@@ -152,13 +152,12 @@ const CreateClient = async (req, res) => {
       status: 1,
       message: "User data updated, JWT token refreshed",
       token: newToken,
-      data: existingUser
+      user: existingUser
     });
   } else {
     const user = new userModel({ name, email, contactNumber, socketid: '' });
     const token = jwt.sign({email,name, email, contactNumber }, process.env.JWT_KEY, { expiresIn: "7d" })
     user.token = token;
-
     await user.save();
 
     return res.json({
