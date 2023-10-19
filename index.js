@@ -53,9 +53,17 @@ io.on("connection", (socket) => {
       await userModel.findOneAndUpdate({ _id: data.toString() }, { socketid: socket.id });
     }
   });
+  socket.on('addclient', async (data) => {
+    console.log("socket ID", socket.id, data)
+    if (data) { // Check if data is defined
+      await userModel.findOneAndUpdate({ _id: data.toString() }, { socketid: socket.id });
+    }
+  });
+
 
   socket.on("add-user", async (newuserID) => {
     if (newuserID) { // Check if newuserID is defined
+      console.log(newuserID,'newuserID')
       await userModel.findOneAndUpdate({ _id: newuserID.toString() }, { socketid: socket.id });
       if (!onlineUser.some((user) => user.userID == newuserID)) {
         onlineUser.push({

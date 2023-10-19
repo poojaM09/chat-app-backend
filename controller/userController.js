@@ -32,7 +32,13 @@ const register = async (req, res) => {
     });
   }
   const hashedPassword = await bcrypt.hash(password, 10);
-  const user = new userModel({ name, email, password: hashedPassword, socketid: '' });
+  const user = new userModel({
+    name: name.toLowerCase(),
+    email: email.toLowerCase(),
+    password: hashedPassword,
+    socketid: '',
+    role: "1"
+  });
   await user.save();
 
   res.json({
@@ -75,6 +81,7 @@ const login = async (req, res) => {
       name: existUser.name,
       email: existUser.email,
       password: existUser.password,
+      role:existUser.role,
     };
 
     const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: "7d" });
@@ -101,34 +108,42 @@ const searchUser = async (req, res) => {
   if (!search) {
     return res.json({
       status: 0,
-      message: "all fildes are required.",
+      message: "all fields are required.",
     });
   }
+  const searchTerms = search.split(" ");
   try {
     const data = await userModel.find({
       $or: [
         {
-          name: { $regex: `^${search}`, $options: 'm' },
+          $or: searchTerms.map(term => ({
+            name: { $regex: term, $options: 'i' },
+          })),
         },
-        { email: { $regex: `^${search}`, $options: 'm' } },
+        {
+          $or: searchTerms.map(term => ({
+            email: { $regex: term, $options: 'i' },
+          })),
+        },
       ],
     });
     if (data.length > 0) {
       return res.json({
         status: 1,
         user: data,
-        message: "search successfully.",
+        message: "Search successful.",
       });
     } else {
       return res.json({
         status: 0,
-        message: "No result Found ",
+        message: "No results found.",
       });
     }
   } catch (error) {
-    console.log("error");
+    console.log(error);
   }
 };
+
 
 const CreateClient = async (req, res) => {
   const { name, email, contactNumber } = req.body;
@@ -139,12 +154,22 @@ const CreateClient = async (req, res) => {
       message: "All fields are required.",
     });
   }
-  const existingUser = await userModel.findOne({ email });
+
+  const emailLowerCase = email.toLowerCase();
+
+  const existingUser = await userModel.findOne({ email: emailLowerCase });
+
   if (existingUser) {
-    existingUser.name = name;
+    existingUser.name = name.toLowerCase();
     existingUser.contactNumber = contactNumber;
-    existingUser.email = email;
-    const newToken = jwt.sign({ id:existingUser.id,email: existingUser.email ,name:existingUser.name,contactNumber:existingUser.contactNumber}, process.env.JWT_KEY, { expiresIn: "7d" });
+    existingUser.email = emailLowerCase;
+    const newToken = jwt.sign({
+      id: existingUser.id,
+      email: existingUser.email,
+      name: existingUser.name,
+      contactNumber: existingUser.contactNumber,
+      role:existingUser.role
+    }, process.env.JWT_KEY, { expiresIn: "7d" });
     existingUser.token = newToken;
     await existingUser.save();
 
@@ -155,8 +180,19 @@ const CreateClient = async (req, res) => {
       user: existingUser
     });
   } else {
-    const user = new userModel({ name, email, contactNumber, socketid: '' });
-    const token = jwt.sign({email,name, email, contactNumber }, process.env.JWT_KEY, { expiresIn: "7d" })
+    const user = new userModel({
+      name: name.toLowerCase(),
+      email: emailLowerCase,
+      contactNumber: contactNumber,
+      socketid: '',
+      role: "0"
+    });
+    const token = jwt.sign({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      contactNumber: user.contactNumber
+    }, process.env.JWT_KEY, { expiresIn: "7d" });
     user.token = token;
     await user.save();
 
@@ -168,6 +204,7 @@ const CreateClient = async (req, res) => {
     });
   }
 };
+
 
 const getUserByID = async (req, res) => {
   const id = req.body.id
@@ -182,7 +219,7 @@ const SendMail = async (req, res) => {
   try {
     const { name, email, contact, message } = req.body;
     const transporter = nodemailer.createTransport({
-      service: 'Gmail', // You can use other email services or SMTP details here
+      service: 'Gmail',
       auth: {
         user: 'your_email@gmail.com',
         pass: 'your_email_password',
@@ -191,7 +228,7 @@ const SendMail = async (req, res) => {
     const mailOptions = {
       from: 'your_email@gmail.com',
       to: 'recipient_email@example.com',
-      subject: 'Message from Your Website', 
+      subject: 'Message from Your Website',
       text: `Name: ${name}\nEmail: ${email}\nContact: ${contact}\nMessage: ${message}`,
     };
 
@@ -205,4 +242,4 @@ const SendMail = async (req, res) => {
 
 
 
-module.exports = { register, login, getUser, searchUser, CreateClient, getUserByID ,SendMail};
+module.exports = { register, login, getUser, searchUser, CreateClient, getUserByID, SendMail };
