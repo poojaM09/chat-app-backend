@@ -52,14 +52,13 @@ io.on("connection", (socket) => {
     if (data) {
       await userModel.findOneAndUpdate({ _id: data.toString() }, { socketid: socket.id });
     }
-  });
-  socket.on('addclient', async (data) => {
+  })
+  socket.on('client-login',async (data)=>{
     console.log("socket ID", socket.id, data)
     if (data) {
       await userModel.findOneAndUpdate({ _id: data.toString() }, { socketid: socket.id });
     }
-  });
-
+  })
 
   socket.on("add-user", async (newuserID) => {
     console.log(newuserID,"newuserID")
