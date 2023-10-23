@@ -49,13 +49,13 @@ io.on("connection", (socket) => {
 
   socket.on('login', async (data) => {
     console.log("socket ID", socket.id, data)
-    if (data) { // Check if data is defined
+    if (data) {
       await userModel.findOneAndUpdate({ _id: data.toString() }, { socketid: socket.id });
     }
   });
   socket.on('addclient', async (data) => {
     console.log("socket ID", socket.id, data)
-    if (data) { // Check if data is defined
+    if (data) {
       await userModel.findOneAndUpdate({ _id: data.toString() }, { socketid: socket.id });
     }
   });
@@ -97,6 +97,8 @@ io.on("connection", (socket) => {
         console.log("already added");
       }
       console.log("add-user", onlineUser, newuserID);
+      console.log(onlineUser,'dsasds')
+      console.log(newuserID,'newuserID')
       io.emit("online-user", onlineUser);
     }
   });
