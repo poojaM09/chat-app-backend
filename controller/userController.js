@@ -84,7 +84,7 @@ const login = async (req, res) => {
       role:existUser.role,
     };
 
-    const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: "7d" });
+    const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: "24h" });
 
     return res.json({
       status: 1,
@@ -169,7 +169,7 @@ const CreateClient = async (req, res) => {
       name: existingUser.name,
       contactNumber: existingUser.contactNumber,
       role:existingUser.role
-    }, process.env.JWT_KEY, { expiresIn: "7d" });
+    }, process.env.JWT_KEY, { expiresIn: "24h" });
     existingUser.token = newToken;
     await existingUser.save();
 
@@ -192,14 +192,14 @@ const CreateClient = async (req, res) => {
       email: user.email,
       name: user.name,
       contactNumber: user.contactNumber
-    }, process.env.JWT_KEY, { expiresIn: "7d" });
+    }, process.env.JWT_KEY, { expiresIn: "24h" });
     user.token = token;
     await user.save();
 
     return res.json({
       status: 1,
       message: "User created",
-      token,
+      token,  
       user,
     });
   }

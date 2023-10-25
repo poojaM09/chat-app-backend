@@ -61,7 +61,6 @@ io.on("connection", (socket) => {
   })
 
   socket.on("add-user", async (newuserID) => {
-    console.log(newuserID,"newuserID")
     if (newuserID) {
       console.log(newuserID,'newuserID')
       await userModel.findOneAndUpdate({ _id: newuserID.toString() }, { socketid: socket.id });
@@ -70,7 +69,7 @@ io.on("connection", (socket) => {
           userID: newuserID,
           socketId: socket.id,
         });
-        console.log()
+        console.log(onlineUser,'daasdsad()')
       } else {
         let index = onlineUser.findIndex(item => item.userID == newuserID)
         onlineUser[index].socketId = socket.id;
