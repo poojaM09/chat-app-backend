@@ -56,7 +56,9 @@ const login = async (req, res) => {
       message: "all fildes are required.",
     });
   }
-  const existUser = await userModel.findOne({ email });
+  const emailLowerCase = email.toLowerCase();
+
+  const existUser = await userModel.findOne({  email: emailLowerCase });
   if (!existUser) {
     return res.json({
       status: 0,
@@ -84,7 +86,7 @@ const login = async (req, res) => {
       role:existUser.role,
     };
 
-    const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: "24h" });
+    const token = jwt.sign(payload, process.env.JWT_KEY, {expiresIn: 24 * 60 * 60});
 
     return res.json({
       status: 1,
@@ -169,7 +171,7 @@ const CreateClient = async (req, res) => {
       name: existingUser.name,
       contactNumber: existingUser.contactNumber,
       role:existingUser.role
-    }, process.env.JWT_KEY, { expiresIn: "24h" });
+    }, process.env.JWT_KEY, {expiresIn: 24 * 60 * 60});
     existingUser.token = newToken;
     await existingUser.save();
 
@@ -192,7 +194,7 @@ const CreateClient = async (req, res) => {
       email: user.email,
       name: user.name,
       contactNumber: user.contactNumber
-    }, process.env.JWT_KEY, { expiresIn: "24h" });
+    }, process.env.JWT_KEY, {expiresIn: 24 * 60 * 60});
     user.token = token;
     await user.save();
 
