@@ -194,21 +194,38 @@ let onlineUser = [];
 io.on("connection", (socket) => {
 
   socket.on('login', async (data) => {
-console.log("socket ID", socket.id, data)
-    if (data) {
-      await userModel.findOneAndUpdate({ _id: data.toString() }, { socketid: socket.id });
-    }
-  })
-  socket.on('client-login',async (data)=>{
     console.log("socket ID", socket.id, data)
     if (data) {
       await userModel.findOneAndUpdate({ _id: data.toString() }, { socketid: socket.id });
     }
   })
+  socket.on('client-login', async (data) => {
+    console.log("socket ID", socket.id, data)
+    if (data) {
+      await userModel.findOneAndUpdate({ _id: data.toString() }, { socketid: socket.id });
+    }
+  })
+  // socket.on('getItems', () => {
+  //   userModel.find({}, (err, items) => {
+  //     if (err) {
+  //       console.error(err);
+  //     } else {
+  //       socket.emit('items', items);
+  //     }
+  //   });
+  // });
 
+    socket.on('getItems', async () => {
+      try {
+        const items = await userModel.find({});
+        socket.emit('items', items);
+      } catch (err) {
+        console.error(err);
+      }
+    });
   socket.on("add-user", async (newuserID) => {
     if (newuserID) {
-console.log(newuserID,'newuserID')
+      console.log(newuserID,'newuserID')
       await userModel.findOneAndUpdate({ _id: newuserID.toString() }, { socketid: socket.id });
       if (!onlineUser.some((user) => user.userID == newuserID)) {
         onlineUser.push({
@@ -238,21 +255,21 @@ console.log(newuserID,'newuserID')
       } else {
         let index = onlineUser.findIndex(item => item.userID == newuserID)
         onlineUser[index].socketId = socket.id;
-console.log("already added");
+        console.log("already added");
       }
-console.log("add-user", onlineUser, newuserID);
+      console.log("add-user", onlineUser, newuserID);
       console.log(onlineUser,'dsasds')
       console.log(newuserID,'newuserID')
       io.emit("online-user", onlineUser);
     }
   });
 
-//send message
+  //send message
   socket.on("send-msg", (data) => {
 
     const receiver = data.to;
     const receiverSocket = onlineUser?.find((user) => user.userID == receiver);
-console.log('data', data, data.socketid, receiverSocket, 'socket.id', socket.id);
+    console.log('data', data, data.socketid, receiverSocket, 'socket.id', socket.id);
 
     if (receiverSocket) {
       if (data.message) {
@@ -268,7 +285,7 @@ console.log('data', data, data.socketid, receiverSocket, 'socket.id', socket.id)
           msg_type: data.msg_type,
         });
       }
-      io.to(receiverSocket.socketId).emit("msg-notification");
+            io.to(receiverSocket.socketId).emit("msg-notification");
     }
   });
 
@@ -279,7 +296,7 @@ console.log('data', data, data.socketid, receiverSocket, 'socket.id', socket.id)
 
   socket.on('disconnecting', function () {
     console.log("disconnecting")
-});
+  });
 
 });
 
