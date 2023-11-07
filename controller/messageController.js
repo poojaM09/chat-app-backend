@@ -81,9 +81,7 @@ const getAllMessage = async (req, res) => {
         { $and: [{ to: from, from: to }] },
       ],
     });
-    console.log(data, 'data')
     const projectMsg = data.map((msg) => {
-      console.log(msg, 'msg')
       return {
         fromSelf: msg.from.toString() === from,
         message: msg.text,
@@ -184,12 +182,11 @@ const getAllUserMessage = async (req, res) => {
 const getFile = async(req, res) => {
   const filename = req.params.filename;
   res.sendFile(path.join(__dirname, '../public', filename));
-  console.log(path.join(__dirname, '../public', filename,'path'))
 };
 
 const getByIDMessage = async (req, res) => {
   try {
-    const { id, msg } = req.body; // Changed variable name from Msg to msg to match user input
+    const { id, msg } = req.body;
     const data = await messageModel.find({
       $or: [
         {

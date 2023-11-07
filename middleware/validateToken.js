@@ -7,7 +7,6 @@ const isAuthenticated = async (req, res, next) => {
     jwt.verify(token, process.env.JWT_KEY, async (err, data) => {
       if (err) return err;
       if (!data) {
-        console.log("You are Not verifed");
         return res.json({
           status: 0,
           message: "You are Not verifed",
@@ -20,10 +19,6 @@ const isAuthenticated = async (req, res, next) => {
             message: "user not available",
           });
         } else {
-          // res.json({
-          //   status: 1,
-          //   message: "you are verifyed",
-          // });
           next();
         }
       }

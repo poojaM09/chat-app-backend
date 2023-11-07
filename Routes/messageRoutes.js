@@ -17,13 +17,5 @@ router.post("/chatapi", chatApi);
 router.post("/imagGenrator", imagGenrator);
 router.get("/getFile/:filename", getFile);
 
-// router.post("/chatapi", async (req, res) => {
-//   const msg = req.body.message;
-//   const response = await chatApi(req, res);
-//   console.log("response response", response);
-//   return res.json({
-//     message: response,
-//   });
-// });
 
 module.exports = router;
